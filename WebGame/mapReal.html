@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Map Editor</title>
+<!--Canvas size defined in element, mapGrid dimensions defines in mapGrid-->
+<style>
+.mapTile{
+	width:25px;
+	height:25px;
+	float:left;	
+}
+
+body{
+	
+}
+
+.mapTile:hover{
+	background-color:blue;
+}
+
+.assetSelector{
+	float:right;
+	margin-right:15px;
+	margin-top:20px;
+}
+
+#mapGrid{
+	opacity:0.4;
+	width:1350px; 
+	height:625px;
+	position:absolute;
+	top:0;
+	left:0;
+}
+
+.topLeft{
+	position:absolute;
+	top:0;
+	left:0;
+}
+
+html, body{
+	width:100%;
+	height:100%;
+	margin:0;
+	padding:0;
+}
+
+#selectionPanel{
+	position:fixed;
+	background-color: white;
+	width:15px;
+	bottom:0;
+	top:0;
+	right:0px;
+	opacity:0.6;
+	overflow:hidden;
+}
+
+#selectionPanel:hover{
+	width:300px;
+	bottom:0;
+	border:4px solid black;
+}
+
+#coordDisplay{
+	position:absolute;
+	bottom: 0;
+	right:120px;
+	background-color:transparent;
+	font-size: 1em;
+	color:white;
+	border:1px solid black;
+	padding:10px;
+	
+}
+
+.handPointer{
+    cursor: pointer;
+}
+
+.scrollBar{
+	overflow-x:scroll;
+	width: 1350px;
+	height:625px;
+}
+
+.assetImage{
+	display:inline;
+	overflow:scroll;
+	padding:2px;
+
+}
+
+#assetPanel{
+	position: fixed;
+	margin-top:80px;
+	width:175px;
+}
+</style>
+</head>
+
+<body onload="init()" background="landscape-1802337_1920.jpg">
+<div class="scrollBar">
+	<canvas id="mapCanvas" class="topLeft" height="625px" width="1350px"></canvas><!--dimensions should be specified by attributes width and height... look into it more-->
+	<div id="mapGrid" class="mapDimension"></div>
+	<p id="coordDisplay"></p>
+</div>
+<div id="selectionPanel">
+
+<div id="btnPannelDiv">
+	<button type="button">New</button> 
+	<button type="button">Load</button> 
+	<button type="button">Save</button> 
+	<button type="button">Undo</button> 
+</div>	
+	<select class="assetSelector">
+		<option class="cssSelect" value="default" selected="selected" disabled></option>
+		<optgroup label="Game Objects">
+		<option class="cssSelect" data-value="0" value="rivers" onclick="addImagesToPick(this);">Rivers</option>
+		<option class="cssSelect" data-value="1" value="mountains" onclick="addImagesToPick(this);">Mountains</option>
+		<option class="cssSelect" data-value="2" value="castles" onclick="addImagesToPick(this);">Castles</option>
+		<option class="cssSelect" data-value="3" value="grass" onclick="addImagesToPick(this);">Grass</option>
+		<option class="cssSelect" data-value="4" value="characters" onclick="addImagesToPick(this);">Characters</option>
+		<option class="cssSelect" data-value="5" value="forests" onclick="addImagesToPick(this);">Forests</option>
+		<option class="cssSelect" data-value="6" value="roads" onclick="addImagesToPick(this);">Roads</option>
+		<option class="cssSelect" data-value="7" value="towers" onclick="addImagesToPick(this);">Towers</option>
+	</select>
+	<div id="assetPanel"> </div>
+
+</div>	
+
+<script>
+/* -------------------------------------------------------Image path and image objects can be found here------------------------------------------------------------------------------*/
+var imageObj0 = new Image();
+var imageObj1 = new Image();
+var imageObj2 = new Image();
+var imageObj3 = new Image();
+var imageObj4 = new Image();
+var imageObj5 = new Image();
+var imageObj6 = new Image();
+var imageObj7 = new Image();
+var imageObj8 = new Image();
+var imageObj9 = new Image();
+var imageObj10 = new Image();
+var imageObj11 = new Image();
+var imageObj12 = new Image();
+var imageObj13 = new Image();
+var imageObj14 = new Image();
+var imageObj15 = new Image();
+var imageObj16 = new Image();
+var imageObj17 = new Image();
+var imageObj18 = new Image();
+var imageObj19 = new Image();
+var imageObj20 = new Image();
+var imageObj21 = new Image();
+var imageObj22 = new Image();
+var imageObj23 = new Image();
+var imageObj24 = new Image();
+var imageObj25 = new Image();
+var imageObj26 = new Image(); 
+var imageObj27 = new Image();
+
+
+imageObj0.src = '';
+imageObj1.src = 'Images/MainMapObjects/ninja.png';
+imageObj2.src = 'Images/MainMapObjects/castle.png';
+imageObj3.src = 'Images/MainMapObjects/castle2.png';
+imageObj4.src = 'Images/MainMapObjects/jordansHouse.png';
+imageObj5.src = 'Images/MainMapObjects/FriendlyCastle.png';
+imageObj6.src = 'Images/MainMapObjects/grass.png';
+imageObj7.src = 'Images/MainMapObjects/grass2.png';
+imageObj8.src = 'Images/MainMapObjects/grass3.png';
+imageObj9.src = 'Images/MainMapObjects/grass4.png';
+imageObj10.src = 'Images/MainMapObjects/grass5.png';
+imageObj11.src = 'Images/MainMapObjects/grass6.png';
+imageObj12.src = 'Images/MainMapObjects/forest.png';
+imageObj13.src = 'Images/MainMapObjects/river.png';
+imageObj14.src = 'Images/MainMapObjects/river2.png';
+imageObj15.src = 'Images/MainMapObjects/river3.png';
+imageObj16.src = 'Images/MainMapObjects/river4.png';
+imageObj17.src = 'Images/MainMapObjects/river5.png';
+imageObj18.src = 'Images/MainMapObjects/river6.png';
+imageObj19.src = 'Images/MainMapObjects/road.png';
+imageObj20.src = 'Images/MainMapObjects/road2.png';
+imageObj21.src = 'Images/MainMapObjects/road3.png';
+imageObj22.src = 'Images/MainMapObjects/road4.png';
+imageObj23.src = 'Images/MainMapObjects/tower.png';
+imageObj24.src = 'Images/MainMapObjects/tower3.png';
+imageObj25.src = 'Images/MainMapObjects/tower4.png';
+imageObj26.src = 'Images/MainMapObjects/mountain.png';
+imageObj27.src = 'Images/MainMapObjects/mountain2.png';
+
+var gameImages = 	[	imageObj0,imageObj1,imageObj2,imageObj3,imageObj4,imageObj5,imageObj6,imageObj7,imageObj8,imageObj9,imageObj10,
+						imageObj11,imageObj12,imageObj13,imageObj14,imageObj15,imageObj16,imageObj17,imageObj18,imageObj19,imageObj20,
+						imageObj21,imageObj22,imageObj23,imageObj24,imageObj25,imageObj26,imageObj27
+					];						
+//Global variables			
+var matrixOfMap=undefined;
+var ctxx = undefined;
+var imgValue=undefined;	
+						
+						
+//2 dimensional array with fixed size and defult value;
+function createGridMap(w, h)
+{	
+	var mapMatrix = [];
+	
+	for(var i = 0; i < h; i++) 
+	{
+		mapMatrix[i] = [];
+		for(var j = 0; j < w; j++) 
+		{
+			mapMatrix[i][j] = 6;
+		}
+	}
+	return mapMatrix;
+	
+}
+	
+function init(){ 	
+	var tileSize = 25;
+	var canvasElementOverlay = document.getElementById("mapGrid");
+	var dimensions = canvasElementOverlay.getBoundingClientRect();
+	var parentWidth = dimensions.width;
+	var parentHeight = dimensions.height;
+	var numberOfColumns = (parentWidth/tileSize); //x
+	var numberOfRows = (parentHeight/tileSize);//y
+
+
+	//Matrix of canvas size
+	matrixOfMap=createGridMap(numberOfColumns,numberOfRows);
+	
+	var canvass=document.getElementById("mapCanvas");
+	
+
+	ctxx=canvass.getContext("2d");
+
+	for(var i=0;i<matrixOfMap.length;i++)
+	{
+		for (var j=0;j<matrixOfMap[i].length;j++)
+		{
+			var x = matrixOfMap[i][j];
+			ctxx.drawImage(gameImages[x], j*25, i*25);
+			
+		}	
+	}
+	
+	addDivGridForMap();
+}
+
+
+function getValue(value)
+{	
+	 imgValue =value.getAttribute("data-value");
+	
+}
+
+function getCoordinates(coord){
+	var arrContent=imgValue;
+	var coorX =coord.getAttribute("data-x");
+	var coorY =coord.getAttribute("data-y");
+	var newValue = matrixOfMap[coorY][coorX]=arrContent;
+	
+	 document.getElementById("coordDisplay").innerHTML ="Coordinates: ["+coorY+"]["+coorX+"] value "+ newValue;
+	//For loop that updates the canvas with the new [y][x] values
+	for(var i=0;i<matrixOfMap.length;i++)
+	{
+		for (var j=0;j<matrixOfMap[i].length;j++)
+		{
+			var x = matrixOfMap[i][j];
+			ctxx.drawImage(gameImages[x], j*25, i*25);
+		}	
+	}
+}
+
+function addDivGridForMap()
+{
+	var tileSize = 25; //Size of image and  tiles 25x25.
+	var xCoordinate = 0;
+	var yCoordinate = 0;
+	var templateDiv = "";
+	var canvasElementOverlay = document.getElementById("mapGrid");
+	var dimensions = canvasElementOverlay.getBoundingClientRect();
+	var parentWidth = dimensions.width;
+	var parentHeight = dimensions.height;
+	var numberOfColumns = (parentWidth/tileSize); //x number of columns
+	var numberOfRows = (parentHeight/tileSize);//y number of rows
+	var totalNumberOfTiles = numberOfColumns * numberOfRows;//total
+	for(var x=0;x<totalNumberOfTiles;x++)
+	{	
+		templateDiv += "<div class='mapTile' onclick='getCoordinates(this)' data-x='"+xCoordinate+"' data-y='"+yCoordinate+"' ></div>";
+		xCoordinate++;
+		xCoordinate=xCoordinate%numberOfColumns;
+		if(xCoordinate==0)
+		{
+			yCoordinate++;
+		}
+	}
+	canvasElementOverlay.innerHTML = templateDiv;
+}
+
+
+function addImagesToPick(data)
+{	
+	var tableValue =data.getAttribute("data-value");
+	var tileSize = 25;
+	var templateDiv = "";
+	var assetPanel = document.getElementById("assetPanel");
+	
+	var rivers=[gameImages[13],gameImages[14],gameImages[15],gameImages[16],gameImages[17],gameImages[18]],
+		castle=[gameImages[2],gameImages[3],gameImages[4],gameImages[5]],
+		grass=[gameImages[6],gameImages[7],gameImages[8],gameImages[9],gameImages[10],gameImages[11]],
+		mountains = [gameImages[26],gameImages[27]],
+		characters=[gameImages[1]],
+		forest=[gameImages[12]],
+		roads=[gameImages[19],gameImages[20],gameImages[21],gameImages[22]],
+		towers=[gameImages[23],gameImages[24],gameImages[25]];
+
+	var myMap = new Map();
+	var indexArray=[0,1,2,3,4,5,6,7];
+	{};
+
+	// Setting values 
+	myMap.set(indexArray[0], rivers);
+	myMap.set(indexArray[1], mountains);
+	myMap.set(indexArray[2], castle);
+	myMap.set(indexArray[3], grass);
+	myMap.set(indexArray[4], characters);
+	myMap.set(indexArray[5], forest);
+	myMap.set(indexArray[6], roads);
+	myMap.set(indexArray[7], towers);
+	
+	//Number of images in a category; 
+	var categoryContent=Object.keys(myMap.get(indexArray[tableValue])).length;
+	
+	for(var x=0;x<myMap.size;x++)
+	{
+		if(tableValue==indexArray[x])
+		{
+			for(var i=0;i<categoryContent;i++)
+				{	//Retrives gameImages[][] indexes;
+					var imageIndex=gameImages.indexOf(myMap.get(indexArray[tableValue])[i]);
+					//Retrives image src;
+					var imageSrc=gameImages[gameImages.indexOf(myMap.get(indexArray[tableValue])[i])].src;
+					
+					templateDiv += "<div class='assetImage' data-value='"+imageIndex+"' onclick='addDivGridForMap; getValue(this)'><img src='"+imageSrc+"'/></div>";
+				}
+			assetPanel.innerHTML = templateDiv;
+		}
+	}
+}
+
+</script>
+
+</body>
+</html>
